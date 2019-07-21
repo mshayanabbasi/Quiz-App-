@@ -3,7 +3,7 @@ import Input from '../Input/Input';
 import './Login.css'
 
 class Login extends Component {
-    state = { 
+    state = {
         users: [
             {id:0, name:'admin', pass: 'admin'},
             {id:1, name:'shayan', pass: 'shayan'},
@@ -23,22 +23,34 @@ class Login extends Component {
          const { name, pass, errors } = this.state
          if(name.length > 3) {
              errors.hasError = true
-             errors.errorObj["name"] ? 
-             errors.errorObj["name"] = {message: "Name Can't Be Less Then 4 Characters"} :
-             errors.errorObj["name"].message += "Name Can't Be Less Then 4 Characters"
+             errors.errorObj["name"] ?
+             errors.errorObj["name"].message += "Name Can't Be Less Then 4 Characters" :
+             errors.errorObj["name"] = {message: "Name Can't Be Less Then 4 Characters"}
          }
-         return errors.hasError ? errors : {
-             hasError: false,
-             errorObj: {},
-             serverError: ""
-         }
+         console.log(errors);
      }
      onSubmit = (event) => {
         event.preventDefault()
         const { users, errors, name, pass } = this.state
+        this.setState({
+          errors: {
+            hasError: false,
+            errorObj: {},
+            serverError: ""
+          }
+        })
+        console.log(errors);
+        const validate = this.validate()
+        console.log(validate);
+        if(validate.hasError){
+          this.setState({
+            errors: validate
+          })
+          return ;
+        }
         var currentUser = users.filter((user) => {
             return user.name === name && user.pass === pass
-        })    
+        })
         if(currentUser.length) {
             localStorage.setItem("currentUser", JSON.stringify(currentUser[0]))
         }
@@ -47,15 +59,15 @@ class Login extends Component {
             this.setState({ errors })
         }
     }
-    render() { 
+    render() {
         const { name, errors, pass } = this.state
-        return ( 
+        return (
             <div>
                 <div className="login-form-wrapper">
                 <form onSubmit={(event) => this.onSubmit(event)}>
                     <h1>Login</h1>
                     {errors.serverError && <p><strong className="error">{errors.serverError}</strong></p>}
-                    <Input 
+                    <Input
                         type="text"
                         value={name}
                         id="name"
@@ -65,7 +77,7 @@ class Login extends Component {
                         onChange={(event) => this.setState({[event.target.name]: event.target.value})}
                         errors={errors}
                     />
-                    <Input 
+                    <Input
                         type="password"
                         value={pass}
                         id="pass"
@@ -75,7 +87,7 @@ class Login extends Component {
                         onChange={(event) => this.setState({[event.target.name]: event.target.value})}
                         errors={errors}
                     />
-                    <Input 
+                    <Input
                         type="submit"
                         value="Login"
                         id="my-btn-login"
@@ -87,5 +99,5 @@ class Login extends Component {
          );
     }
 }
- 
+
 export default Login;
