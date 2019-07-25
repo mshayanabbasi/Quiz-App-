@@ -18,8 +18,8 @@ const Input = (props) =>{
                     />
                 </div>
             </label>
-            {errors && errors.errorObj[name] && <div className="error-wrapper">
-                        <p className="error">{errors.errorObj[name].message}</p>
+            {errors && errors.errorsObj[name] && <div className="error-wrapper">
+                        <p className="error">{errors.errorsObj[name].message}</p>
                 </div>}
         </div>
     )

@@ -1,48 +1,61 @@
 import React, { Component } from 'react';
 import Input from '../Input/Input';
 import './Login.css'
+import {validateForm} from './helper'
 
 class Login extends Component {
     state = {
         users: [
             {id:0, name:'admin', pass: 'admin'},
-            {id:1, name:'shayan', pass: 'shayan'},
+            {id:1, name:'shayan', pass: '12345678'},
             {id:2, name:'arif', pass: 'arif'},
           ],
           isAuth: false,
           currentUser: null,
           errors: {
               hasError: false,
-              errorObj: {},
+              errorsObj: {},
               serverError: ""
           },
           name: "",
           pass: ""
      }
-     validate = () => {
-         const { name, pass, errors } = this.state
-         if(name.length > 3) {
-             errors.hasError = true
-             errors.errorObj["name"] ?
-             errors.errorObj["name"].message += "Name Can't Be Less Then 4 Characters" :
-             errors.errorObj["name"] = {message: "Name Can't Be Less Then 4 Characters"}
-         }
-         console.log(errors);
+     onChange = (event) => {
+       const { errors, name, pass } = this.state
+      this.setState({
+        [event.target.name]: event.target.value,
+        errors: validateForm("each", {name, pass}, event.target.name, errors)
+      })
      }
+    // validate = () => {
+    //   const  { name, pass } = this.state
+    //   const errors = {
+    //     hasError: false,
+    //     errorsObj: {},
+    //     serverError: ""
+    //   }
+    //   if (name.length < 3) {
+    //     errors.hasError = true
+    //     errors.errorsObj["name"] ?
+    //       errors.errorsObj["name"].message += `` :
+    //       errors.errorsObj["name"] = { message: ` Name Can't Be Less Than 4 Charachters \n`}
+    //   }
+    //   return  errors;
+    // }
      onSubmit = (event) => {
         event.preventDefault()
         const { users, errors, name, pass } = this.state
         this.setState({
           errors: {
             hasError: false,
-            errorObj: {},
+            errorsObj: {},
             serverError: ""
           }
         })
-        console.log(errors);
-        const validate = this.validate()
-        console.log(validate);
-        if(validate.hasError){
+        // console.log(errors);
+        const validate = validateForm("all", { name, pass })
+        // console.log(validate);
+        if (validate.hasError) {
           this.setState({
             errors: validate
           })
@@ -53,10 +66,12 @@ class Login extends Component {
         })
         if(currentUser.length) {
             localStorage.setItem("currentUser", JSON.stringify(currentUser[0]))
+            this.props.history.push({pathname: "/dashboard", state : {isAuth: true}})
         }
         else {
             errors.serverError = "Wrong Credentials"
             this.setState({ errors })
+            return ;
         }
     }
     render() {
@@ -74,7 +89,7 @@ class Login extends Component {
                         name="name"
                         label="UserName"
                         placeholder="Enter Your Name"
-                        onChange={(event) => this.setState({[event.target.name]: event.target.value})}
+                        onChange={(event) => this.onChange(event)}
                         errors={errors}
                     />
                     <Input
@@ -84,7 +99,7 @@ class Login extends Component {
                         name="pass"
                         label="Password"
                         placeholder="Enter Your Password"
-                        onChange={(event) => this.setState({[event.target.name]: event.target.value})}
+                        onChange={(event) => this.onChange(event)}
                         errors={errors}
                     />
                     <Input
